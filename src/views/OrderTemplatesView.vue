@@ -107,7 +107,7 @@
           <div class="action-buttons">
             <button class="btn btn-secondary" @click="cancelForm">取消</button>
             <!-- <RouterLink to="/order-template/122"> -->
-            <button class="btn btn-secondary" @click="detailForm">详情</button>
+            <!-- <button class="btn btn-secondary" @click="detailForm">详情</button> -->
             <!-- </RouterLink> -->
             <!-- <button class="btn btn-primary" @click="saveTemplate" :disabled="!isValidTemplate">
               {{ isEditing ? '更新' : '添加' }}
@@ -314,11 +314,6 @@ const detailForm = () => {
     params: { id: 111 },
     state: { template: JSON.stringify(currentTemplate.value) }
   });
-
-  // window.open(router.resolve({
-  //   name: 'OrderTemplateDetails',
-  //   query: { id: 1112, value: 123456, template: JSON.stringify(currentTemplate.value) }
-  // }).href, '_blank');
 };
 
 // 处理图片上传

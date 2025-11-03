@@ -109,9 +109,7 @@ const goBack = () => {
 
 // Load template data on component mount
 onMounted(() => {
-    // Try to get template data from route state
-    // console.log(route.query.template);
-
+    // Try to get template data from
 
     if (history.state.template) {
         try {
@@ -128,7 +126,6 @@ onMounted(() => {
 
 <style scoped>
 .order-template-details-view {
-    width: 100%;
     padding-left: 50px;
     padding-right: 50px;
 }
@@ -232,7 +229,6 @@ onMounted(() => {
 
 /* 多行数据样式 */
 .items-section {
-    width: 100%;
     margin-top: 20px;
     padding: 20px;
     background: #f8f9fa;
