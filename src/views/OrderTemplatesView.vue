@@ -193,18 +193,18 @@ const editingIndex = ref(-1);
 import router from '../router/index'
 // 当前编辑的模板
 const currentTemplate = ref({
- id: Date.now(),
-    name: '',
-    items: [
-      {
-        id: Date.now(),
-        name: '',
-        description: '',
-        image: '',
-        price: 0,
-        quantity: 0
-      }
-    ]
+  id: Date.now(),
+  name: '',
+  items: [
+    {
+      id: Date.now(),
+      name: '',
+      description: '',
+      image: '',
+      price: 0,
+      quantity: 0
+    }
+  ]
 });
 
 // 计算总价
@@ -345,7 +345,7 @@ const handleItemImageUpload = (event, itemIndex) => {
     } else {
       reader.onload = (e) => {
         addNewItem();
-        currentTemplate.value.items[currentTemplate.value.items.length-1].image = e.target.result;
+        currentTemplate.value.items[currentTemplate.value.items.length - 1].image = e.target.result;
       };
     }
 
@@ -414,16 +414,18 @@ const exportToExcel = async () => {
 
     // 设置列标题
     worksheet.columns = [
-      { header: '序号', key: 'templateIndex', width: 10 },
-      { header: '图片', key: 'templateName', width: 40 },
-      { header: '详情', key: 'itemName', width: 25 },
-      { header: '单价', key: 'price', width: 12 },
-      { header: '数量', key: 'quantity', width: 10 },
-      { header: '小计', key: 'total', width: 15 }
+      { header: 'REF NO', key: 'templateIndex', width: 10 },
+      { header: 'PICTURE', key: 'templateName', width: 40 },
+      { header: 'DESCRIPTION', key: 'itemName', width: 25 },
+
+      { header: 'QTY', key: 'quantity', width: 10 },
+      { header: 'UNIT', key: 'unit', width: 10 },
+      { header: 'PRICE', key: 'price', width: 20 },
+      { header: 'SUM', key: 'total', width: 15 }
     ];
 
     // 设置表头样式
-    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).font = { bold: true, size: 14 };
     worksheet.getRow(1).fill = {
       type: 'pattern',
       pattern: 'solid',
@@ -449,20 +451,51 @@ const exportToExcel = async () => {
 
         // 设置基本数据
         row.getCell(1).value = itemIndex + 1;
+
+
+        row.getCell(1).font = {
+          bold: true,
+          size: 22
+        };
         row.getCell(1).border = sty;
 
         row.getCell(3).value = item.description || '';
-        row.getCell(4).value = '$' + (item.price || 0);
-        row.getCell(5).value = item.quantity || 0;
-        row.getCell(6).value = '$' + item.price * item.quantity;
+        row.getCell(3).font = {
+          bold: true
+        };
+        
+        row.getCell(6).numFmt ='"$"#,##0.00';
+        row.getCell(6).value = (item.price || 0);
+        row.getCell(6).font = {
+          bold: true
+        };
+        row.getCell(4).value = item.quantity || 0;
 
+        row.getCell(4).font = {
+          bold: true
+        };
+        row.getCell(5).value = 'pcs';
 
+        row.getCell(5).font = {
+          bold: true
+        };
+
+        row.getCell(7).numFmt ='"$"#,##0.00';
+        //公式
+        row.getCell(7).value = {
+          formula: '=D' + rowNumber + " * F" + rowNumber, // 设置公式
+        };
+
+        row.getCell(7).font = {
+          bold: true
+        };
 
         row.getCell(2).border = sty;
         row.getCell(3).border = sty;
         row.getCell(4).border = sty;
         row.getCell(5).border = sty;
         row.getCell(6).border = sty;
+        row.getCell(7).border = sty;
         // 设置行高以适应图片
 
         // 如果有图片，添加到图片列
@@ -495,8 +528,8 @@ const exportToExcel = async () => {
 
             // 将图片添加到指定单元格
             worksheet.addImage(imageId, {
-              tl: { col: 1, row: itemIndex + 1 ,offsetX: -20, offsetY: -20}, // 图片列（G列）
-              br: { col: 2, row: itemIndex + 2 ,offsetX: -20, offsetY: -20}, // 右下角位置
+              tl: { col: 1, row: itemIndex + 1, offsetX: -20, offsetY: -20 }, // 图片列（G列）
+              br: { col: 2, row: itemIndex + 2, offsetX: -20, offsetY: -20 }, // 右下角位置
               editAs: 'oneCell',
               hyperlinks: {
                 tooltip: `产品${itemIndex + 1}图片`
@@ -516,16 +549,82 @@ const exportToExcel = async () => {
 
       // 总金额
       const row = worksheet.getRow(template.items.length + 2);
-      row.getCell(5).value = 'total';
-      row.getCell(5).border = sty;
-      row.getCell(5).font = {
-        color: { argb: 'FFFF0000' } // 设置为红色
-      };;
+      row.getCell(4).value = {
+        formula: 'SUM(D2:' + 'D' + (template.items.length + 1) + ')', // 设置公式
+      };
+
+      row.getCell(4).font = {
+        color: { argb: '00000000' },
+        bold: true,
+        size: 14
+      };
+      row.getCell(4).border = sty;
+      row.getCell(6).value = 'TOTAL PRICE';
       row.getCell(6).font = {
-        color: { argb: 'FFFF0000' } // 设置为红色
-      };;
-      row.getCell(6).value = '$' + calculateTotal(template);
-      row.getCell(6).border = sty;
+        color: { argb: '00000000' },
+        bold: true
+      };
+      row.getCell(7).font = {
+        color: { argb: 'FFFF0000' },
+        bold: true,
+        size: 14
+      };
+      row.getCell(7).border = sty;
+      
+       row.getCell(7).numFmt ='"$"#,##0.00';
+      row.getCell(7).value = {
+        formula: 'SUM(G2:' + 'G' + (template.items.length + 1) + ')', // 设置公式
+      };
+
+
+      const row3 = worksheet.getRow(template.items.length + 3);
+      row3.getCell(6).value = 'HANGDING CHARGE';
+      //  row3.getCell(7).numFmt ='"$"#,##0.00';
+      row3.getCell(7).value = '0'
+      
+      row3.getCell(6).font = {
+        color: { argb: '00000000' },
+        bold: true
+      };
+      row3.getCell(7).font = {
+        color: { argb: 'FFFF0000' },
+        bold: true
+      };
+
+
+      const row4 = worksheet.getRow(template.items.length + 4);
+      row4.getCell(6).value = 'COMPANY PRODUCTS';
+      //  row4.getCell(7).numFmt ='"$"#,##0.00';
+      row4.getCell(7).value = '0'
+      
+      row4.getCell(6).font = {
+        color: { argb: '00000000' },
+        bold: true
+      };
+      row4.getCell(7).font = {
+        color: { argb: 'FFFF0000' },
+        bold: true
+      };
+
+
+      const row5 = worksheet.getRow(template.items.length + 5);
+      row5.getCell(6).value = 'TOTAL CAF';
+       row5.getCell(7).numFmt ='"$"#,##0.00';
+      row5.getCell(7).value = {
+        formula: 'SUM(G'+(template.items.length + 2) + ':G' + (template.items.length + 4) + ')', // 设置公式
+      };
+      
+      row5.getCell(6).font = {
+        color: { argb: '00000000' },
+        bold: true
+      };
+      row5.getCell(7).font = {
+        color: { argb: 'FFFF0000' },
+        bold: true,
+        size: 14
+      };
+
+
     }
     // 设置所有行的对齐方式
     worksheet.eachRow((row, rowNumber) => {

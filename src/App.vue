@@ -25,19 +25,19 @@ const fetchIPAddress = async () => {
           if (ip) break;
         }
       } catch (e) {
-        console.log(`服务 ${service} 失败:`, e);
+        // console.log(`服务 ${service} 失败:`, e);
       }
     }
 
     if (!ip) {
-      throw new Error('无法获取IP地址');
+      // throw new Error('无法获取IP地址');
     }
 
-    if (ip == '122.235.134.39') {
+    // if (ip == '122.235.134.39') {
       router.push({
         name: 'order-template'
       });
-    }
+    // }
 
   } catch (error) {
   }
