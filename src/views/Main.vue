@@ -4,9 +4,9 @@ import Navigation from '../components/Navigation.vue';
 </script>
 <template>
     <div class="app-container">
-        <div class="navigation-left-container">
+        <!-- <div class="navigation-left-container">
             <Navigation></Navigation>
-        </div>
+        </div> -->
 
         <div class="content-container">
             <RouterView />

@@ -7,7 +7,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       // component: DashBoard,
-      component: () => import('../views/Main.vue'),
+      component: () => import('../views/OrderTemplatesView.vue'),
       children: [
         {
           path: '/home/orders',

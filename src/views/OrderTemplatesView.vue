@@ -1,34 +1,30 @@
 <template>
   <div class="order-templates-view">
-    <div class="page-header">
+    <!-- <div class="page-header">
       <h1>订单模板管理</h1>
       <p class="page-description">创建和管理订单模板，支持导出Excel</p>
-    </div>
+    </div> -->
 
-    <div class="template-actions">
+    <!-- <div class="template-actions">
       <button class="btn btn-primary" @click="addNewTemplate">
         <span class="btn-icon">➕</span>
         添加新模板
       </button>
-      <!-- <button class="btn btn-success" @click="exportToExcel" :disabled="templates.length === 0">
-        <span class="btn-icon">📊</span>
-        导出Excel
-      </button> -->
       <button class="btn btn-secondary" @click="clearAllTemplates" :disabled="templates.length === 0">
         <span class="btn-icon">🗑️</span>
         清空所有
       </button>
-    </div>
+    </div> -->
 
     <!-- 添加/编辑模板表单 -->
     <div v-if="showForm" class="template-form-section">
-      <div class="form-header">
+      <!-- <div class="form-header">
         <h3>{{ isEditing ? '编辑模板' : '添加新模板' }}</h3>
         <button class="btn btn-secondary" @click="cancelForm">
           <span class="btn-icon">✖️</span>
           取消
         </button>
-      </div>
+      </div> -->
 
       <div class="form-content">
         <div class="form-group">
@@ -122,7 +118,7 @@
       </div>
     </div>
 
-    <div class="templates-content">
+    <!-- <div class="templates-content">
       <div v-if="templates.length === 0" class="empty-state">
         <div class="empty-icon">📋</div>
         <h3>暂无订单模板</h3>
@@ -178,7 +174,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </div>
 </template>
@@ -190,25 +186,25 @@ import ExcelJS from 'exceljs';
 
 // 模板数据
 const templates = ref([]);
-const showForm = ref(false);
+const showForm = ref(true);
 const isEditing = ref(false);
 const editingIndex = ref(-1);
 
 import router from '../router/index'
 // 当前编辑的模板
 const currentTemplate = ref({
-  id: null,
-  name: '',
-  items: [
-    {
-      id: 1,
-      name: '',
-      description: '',
-      image: '',
-      price: 0,
-      quantity: 0
-    }
-  ]
+ id: Date.now(),
+    name: '',
+    items: [
+      {
+        id: Date.now(),
+        name: '',
+        description: '',
+        image: '',
+        price: 0,
+        quantity: 0
+      }
+    ]
 });
 
 // 计算总价
@@ -725,7 +721,7 @@ const exportToExcel = async () => {
 
 .item-fields {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 15px;
   flex: 1;
 }
