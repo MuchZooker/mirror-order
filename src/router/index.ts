@@ -7,7 +7,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       // component: DashBoard,
-      component: () => import('../views/OrderTemplatesView.vue'),
+      component: () => import('../views/AboutView.vue'),
       children: [
         {
           path: '/home/orders',
@@ -19,18 +19,18 @@ const router = createRouter({
           name: 'my-orders',
           component: () => import('../views/MyOrdersView.vue'),
         },
-        {
-          path: '/home/order-template',
-          name: 'order-template',
-          component: () => import('../views/OrderTemplatesView.vue'),
-        }
+        // {
+        //   path: '/home/order-template',
+        //   name: 'order-template',
+        //   component: () => import('../views/OrderTemplatesView.vue'),
+        // }
       ]
     },
     {
-      path: '/about',
-      name: 'about',
+      path: '/template',
+      name: 'order-template',
       // component: DashBoard,
-      component: () => import('../views/AboutView.vue'),
+      component: () => import('../views/OrderTemplatesView.vue'),
     },
     {
       path: '/order-template/:id',
