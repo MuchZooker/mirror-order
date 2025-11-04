@@ -412,25 +412,92 @@ const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('订单模板明细');
 
+    const rowCompany = worksheet.getRow(1);
+    rowCompany.getCell(1).font = {
+      bold: true,
+      size: 22,
+      name:'Arial',
+      italic:true,
+      underline:true
+    };
+    rowCompany.getCell(1).value = " Hangzhou Oscar Technology Co. , Ltd.";
+
+
+    const rowCompanyDetail = worksheet.getRow(2);
+    rowCompanyDetail.getCell(1).font = {
+      bold: true,
+      size: 22,
+      name:'Times New Roman',
+      italic:true
+    };
+    rowCompanyDetail.getCell(1).value = " No. 101 Binkang Road, Xixing Street, Binjiang District, Hangzhou City,Zhejiang Province, China";
+
+
+    const rowCompanyDetailTel = worksheet.getRow(3);
+    rowCompanyDetailTel.getCell(1).font = {
+      bold: true,
+      size: 22,
+      name:'Times New Roman',
+      italic:true
+    };
+    rowCompanyDetailTel.getCell(1).value = "MOBILE PHONE NO:0086-13626696955 TEL PHONE NO:0086-579-85893698 FAX NO:0086-579-85893698";
+
+
+
+    const row1 = worksheet.getRow(6);
+    row1.getCell(1).font = {
+      bold: true,
+      size: 12,
+      name:'Arial'
+    };
+    row1.getCell(1).value = "Bill To";
+
+    const row2 = worksheet.getRow(8);
+    row2.getCell(1).font = {
+      bold: true,
+      size: 12,
+      name:'Arial'
+    };
+    row2.getCell(1).value = "Address";
+
+    const row3 = worksheet.getRow(10);
+    row3.getCell(1).font = {
+      bold: true,
+      size: 12,
+      name:'Arial'
+    };
+    row3.getCell(1).value = "TEL";
+
+    const row4 = worksheet.getRow(12);
+    row4.getCell(1).font = {
+      bold: true,
+      size: 12,
+      name:'Arial'
+    };
+    row4.getCell(1).value = "EMAIL";
+
+
+
+
     // 设置列标题
     worksheet.columns = [
-      { header: 'REF NO', key: 'templateIndex', width: 10 },
-      { header: 'PICTURE', key: 'templateName', width: 40 },
-      { header: 'DESCRIPTION', key: 'itemName', width: 25 },
+      { width: 10 },
+      { width: 40 },
+      { width: 25 },
 
-      { header: 'QTY', key: 'quantity', width: 10 },
-      { header: 'UNIT', key: 'unit', width: 10 },
-      { header: 'PRICE', key: 'price', width: 20 },
-      { header: 'SUM', key: 'total', width: 15 }
+      { width: 10 },
+      { width: 10 },
+      { width: 20 },
+      { width: 15 }
     ];
 
-    // 设置表头样式
-    worksheet.getRow(1).font = { bold: true, size: 14 };
-    worksheet.getRow(1).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFE0E0E0' }
-    };
+    // // 设置表头样式
+    // worksheet.getRow(1).font = { bold: true, size: 14 };
+    // worksheet.getRow(1).fill = {
+    //   type: 'pattern',
+    //   pattern: 'solid',
+    //   fgColor: { argb: 'FFE0E0E0' }
+    // };
 
     let sty = {
       top: { style: 'thin' },
@@ -439,16 +506,38 @@ const exportToExcel = async () => {
       right: { style: 'thin' }
     };
 
+
+
+    let startRow = 14;
+    const row = worksheet.getRow(startRow - 1);
+    row.getCell(1).value = "REF NO";
+
+    row.getCell(1).font = { bold: true, size: 12 ,name:'Arial' };
+    row.getCell(1).border = sty;
+    row.getCell(2).value = "PICTURE";
+    row.getCell(2).border = sty;
+    row.getCell(2).font = { bold: true, size: 10 ,name:'Arial' };
+    row.getCell(3).value = "DESCRIPTION";
+    row.getCell(3).border = sty;
+    row.getCell(3).font = { bold: true, size: 10 ,name:'Arial' };
+    row.getCell(4).value = "QTY";
+    row.getCell(4).border = sty;
+    row.getCell(4).font = { bold: true, size: 10 ,name:'Arial' };
+    row.getCell(5).value = "UNIT";
+    row.getCell(5).font = { bold: true, size: 10 ,name:'Arial' };
+    row.getCell(5).border = sty;
+    row.getCell(6).value = "PRICE";
+    row.getCell(6).border = sty;
+    row.getCell(6).font = { bold: true, size: 10 ,name:'Arial' };
+    row.getCell(7).value = "SUM";
+    row.getCell(7).border = sty;
+    row.getCell(7).font = { bold: true, size: 10 ,name:'Arial' };
     if (template.items && template.items.length > 0) {
       for (let itemIndex = 0; itemIndex < template.items.length; itemIndex++) {
         const item = template.items[itemIndex];
-
-        const rowNumber = itemIndex + 2; // 从第2行开始（第1行是标题）
-
+        const rowNumber = itemIndex + startRow; // 从第2行开始（第1行是标题）
         // 添加基本数据
         const row = worksheet.getRow(rowNumber);
-
-
         // 设置基本数据
         row.getCell(1).value = itemIndex + 1;
 
@@ -463,8 +552,8 @@ const exportToExcel = async () => {
         row.getCell(3).font = {
           bold: true
         };
-        
-        row.getCell(6).numFmt ='"$"#,##0.00';
+
+        row.getCell(6).numFmt = '"$"#,##0.00';
         row.getCell(6).value = (item.price || 0);
         row.getCell(6).font = {
           bold: true
@@ -480,7 +569,7 @@ const exportToExcel = async () => {
           bold: true
         };
 
-        row.getCell(7).numFmt ='"$"#,##0.00';
+        row.getCell(7).numFmt = '"$"#,##0.00';
         //公式
         row.getCell(7).value = {
           formula: '=D' + rowNumber + " * F" + rowNumber, // 设置公式
@@ -528,8 +617,8 @@ const exportToExcel = async () => {
 
             // 将图片添加到指定单元格
             worksheet.addImage(imageId, {
-              tl: { col: 1, row: itemIndex + 1, offsetX: -20, offsetY: -20 }, // 图片列（G列）
-              br: { col: 2, row: itemIndex + 2, offsetX: -20, offsetY: -20 }, // 右下角位置
+              tl: { col: 1, row: itemIndex + startRow-1, offsetX: -20, offsetY: -20 }, // 图片列（G列）
+              br: { col: 2, row: itemIndex + startRow, offsetX: -20, offsetY: -20 }, // 右下角位置
               editAs: 'oneCell',
               hyperlinks: {
                 tooltip: `产品${itemIndex + 1}图片`
@@ -548,7 +637,7 @@ const exportToExcel = async () => {
       }
 
       // 总金额
-      const row = worksheet.getRow(template.items.length + 2);
+      const row = worksheet.getRow(template.items.length + startRow);
       row.getCell(4).value = {
         formula: 'SUM(D2:' + 'D' + (template.items.length + 1) + ')', // 设置公式
       };
@@ -570,18 +659,18 @@ const exportToExcel = async () => {
         size: 14
       };
       row.getCell(7).border = sty;
-      
-       row.getCell(7).numFmt ='"$"#,##0.00';
+
+      row.getCell(7).numFmt = '"$"#,##0.00';
       row.getCell(7).value = {
-        formula: 'SUM(G2:' + 'G' + (template.items.length + 1) + ')', // 设置公式
+        formula: 'SUM(G' + startRow + ':G' + (template.items.length + startRow - 1) + ')', // 设置公式
       };
 
 
-      const row3 = worksheet.getRow(template.items.length + 3);
+      const row3 = worksheet.getRow(template.items.length + startRow + 1);
       row3.getCell(6).value = 'HANGDING CHARGE';
       //  row3.getCell(7).numFmt ='"$"#,##0.00';
       row3.getCell(7).value = '0'
-      
+
       row3.getCell(6).font = {
         color: { argb: '00000000' },
         bold: true
@@ -592,11 +681,11 @@ const exportToExcel = async () => {
       };
 
 
-      const row4 = worksheet.getRow(template.items.length + 4);
+      const row4 = worksheet.getRow(template.items.length + startRow + 2);
       row4.getCell(6).value = 'COMPANY PRODUCTS';
       //  row4.getCell(7).numFmt ='"$"#,##0.00';
       row4.getCell(7).value = '0'
-      
+
       row4.getCell(6).font = {
         color: { argb: '00000000' },
         bold: true
@@ -607,13 +696,13 @@ const exportToExcel = async () => {
       };
 
 
-      const row5 = worksheet.getRow(template.items.length + 5);
+      const row5 = worksheet.getRow(template.items.length + startRow + 3);
       row5.getCell(6).value = 'TOTAL CAF';
-       row5.getCell(7).numFmt ='"$"#,##0.00';
+      row5.getCell(7).numFmt = '"$"#,##0.00';
       row5.getCell(7).value = {
-        formula: 'SUM(G'+(template.items.length + 2) + ':G' + (template.items.length + 4) + ')', // 设置公式
+        formula: 'SUM(G' + (template.items.length + startRow) + ':G' + (template.items.length + startRow + 2) + ')', // 设置公式
       };
-      
+
       row5.getCell(6).font = {
         color: { argb: '00000000' },
         bold: true
