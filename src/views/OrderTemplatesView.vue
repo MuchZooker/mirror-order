@@ -26,19 +26,19 @@
         </button>
       </div> -->
 
-      <div class="form-content">
+      <div class="form-content" id="form-content">
         <div class="form-group">
-          <label>客户名称 *</label>
-          <input v-model="currentTemplate.name" type="text" class="form-input" placeholder="请输入客户名称">
+          <label>User *</label>
+          <input v-model="currentTemplate.name" type="text" class="form-input" placeholder="UserName">
         </div>
 
         <!-- 多行数据输入区域 -->
         <div class="items-section">
           <div class="items-header">
-            <h4>产品明细</h4>
+            <h4>Detail</h4>
             <button type="button" class="btn btn-primary btn-sm" @click="addNewItem">
               <span class="btn-icon">➕</span>
-              添加行
+              Add Row
             </button>
           </div>
 
@@ -49,37 +49,38 @@
               <div class="item-fields">
 
                 <div class="form-group">
-                  <label>产品图片</label>
+                  <label>Picture</label>
                   <div class="image-upload">
                     <input :ref="`itemFileInput_${itemIndex}`" type="file" multiple accept="image/*"
                       @change="handleItemImageUpload($event, itemIndex)" class="file-input">
-                    <button type="button" class="upload-btn" @click="$refs[`itemFileInput_${itemIndex}`][0].click()">
-                      <span class="btn-icon">📷</span>
-                      选择图片
-                    </button>
+                    
                     <div v-if="item.image" class="image-preview">
-                      <img :src="item.image" alt="预览" class="preview-img">
+                      <img :src="item.image" alt="Preview" class="preview-img">
                       <button type="button" class="remove-image" @click="removeItemImage(itemIndex)">×</button>
                     </div>
+                    <button  v-if="item.image==''" type="button" class="upload-btn" vis @click="$refs[`itemFileInput_${itemIndex}`][0].click()">
+                      <span class="btn-icon">📷</span>
+                      Select Photo
+                    </button>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label>产品描述</label>
-                  <input v-model="item.description" type="text" class="form-input" placeholder="请输入产品描述">
+                  <label>DESCRIPTION</label>
+                  <input v-model="item.description"  type="text" class="form-input-des" placeholder="Des">
                 </div>
                 <div class="form-group">
-                  <label>单价 ($) *</label>
+                  <label>USD UNIT PRC ($) *</label>
                   <input v-model.number="item.price" type="number" step="0.01" class="form-input" placeholder="0.00">
                 </div>
 
                 <div class="form-group">
-                  <label>数量 *</label>
+                  <label>QTY *</label>
                   <input v-model.number="item.quantity" type="number" class="form-input" placeholder="0">
                 </div>
 
                 <div class="form-group">
-                  <label>小计 ($)</label>
+                  <label>AMOUNT ($)</label>
                   <div class="item-total">${{ calculateItemTotal(item) }}</div>
                 </div>
               </div>
@@ -88,7 +89,7 @@
                 <button type="button" class="btn btn-danger btn-sm" @click="removeItem(itemIndex)"
                   :disabled="currentTemplate.items.length <= 1">
                   <span class="btn-icon">🗑️</span>
-                  删除
+                  Delete
                 </button>
               </div>
             </div>
@@ -97,21 +98,24 @@
 
         <div class="form-actions">
           <div class="total-preview">
-            <span class="total-label">总价预览：</span>
+            <span class="total-label">Total：</span>
             <span class="total-value">${{ calculateTotal(currentTemplate) }}</span>
           </div>
           <div class="action-buttons">
-            <button class="btn btn-secondary" @click="cancelForm">取消</button>
+            <!-- <button class="btn btn-secondary" @click="cancelForm">Cancel</button> -->
             <!-- <RouterLink to="/order-template/122"> -->
             <!-- <button class="btn btn-secondary" @click="detailForm">详情</button> -->
             <!-- </RouterLink> -->
             <!-- <button class="btn btn-primary" @click="saveTemplate" :disabled="!isValidTemplate">
               {{ isEditing ? '更新' : '添加' }}
             </button> -->
-
+           <button class="btn btn-success" @click="exportToPDF">
+              <span class="btn-icon">📊</span>
+              Export Pdf
+            </button>
             <button class="btn btn-success" @click="exportToExcel">
               <span class="btn-icon">📊</span>
-              导出Excel
+              Export Excel
             </button>
           </div>
         </div>
@@ -191,6 +195,8 @@ const isEditing = ref(false);
 const editingIndex = ref(-1);
 
 import router from '../router/index'
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 // 当前编辑的模板
 const currentTemplate = ref({
   id: Date.now(),
@@ -391,6 +397,64 @@ const removeItem = (itemIndex) => {
 const calculateItemTotal = (item) => {
   return ((item.price || 0) * (item.quantity || 0)).toFixed(2);
 };
+
+
+const exportToPDF = async () => {
+  
+  // 添加数据行
+  const template = currentTemplate.value;
+  if (template.name == '') {
+    alert('客户名不能为空');
+    return;
+  }
+  if (template.items.length === 0) {
+    alert('没有数据可导出');
+    return;
+  }
+  // 获取要转换的DOM元素
+  const element = document.getElementById('form-content');
+  if (!element) {
+    console.error(`Element with id '${elementId}' not found.`);
+    return;
+  }
+
+  try {
+    // 使用html2canvas将DOM元素转换为Canvas
+    // 可以根据需要调整配置项，例如缩放比例以提高清晰度{citation:4}
+    const canvas = await html2canvas(element, {
+      scale: 2, // 提高缩放比例可能改善清晰度，但会增加文件大小{citation:4}
+      useCORS: true, // 如果需要加载跨域图片，请设置此项
+      logging: false // 关闭调试日志
+    });
+
+    // 从Canvas获取图片数据
+    const imgData = canvas.toDataURL('image/jpeg', 1.0); // 也可使用'image/png'
+
+    // 计算PDF页面尺寸（这里以A4为例）
+    const pdf = new jsPDF('p', 'mm', 'a4'); // 方向(p:纵向, l:横向)、单位、格式
+    const pdfWidth = pdf.internal.pageSize.getWidth()*0.9;
+    const pdfHeight = pdf.internal.pageSize.getHeight()*0.9;
+
+    // 计算图片在PDF中显示的尺寸，保持宽高比并适应页面宽度
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const imgPDFWidth = imgWidth * ratio;
+    const imgPDFHeight = imgHeight * ratio;
+
+    // 将图片添加到PDF（居中显示）
+    const x = pdf.internal.pageSize.getWidth()*0.05;
+    const y = pdf.internal.pageSize.getHeight()*0.05;
+
+    pdf.addImage(imgData, 'JPEG', x, y, imgPDFWidth, imgPDFHeight);
+    
+    // 保存PDF
+    pdf.save('exported.pdf');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+  }
+}
+
 
 // 导出Excel
 const exportToExcel = async () => {
@@ -1303,6 +1367,17 @@ const exportToExcel = async () => {
   font-weight: 500;
 }
 
+
+.form-input-des {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
 .form-input,
 .form-textarea {
   width: 100%;
@@ -1367,8 +1442,9 @@ const exportToExcel = async () => {
 }
 
 .preview-img {
-  width: 100px;
-  height: 100px;
+ 
+    width: 100%;
+    aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #ddd;
