@@ -410,7 +410,7 @@ const exportToExcel = async () => {
   try {
     // 创建ExcelJS工作簿
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('订单模板明细');
+    const worksheet = workbook.addWorksheet('Sheet');
 
     const rowCompany = worksheet.getRow(1);
     rowCompany.getCell(1).font = {
@@ -488,6 +488,7 @@ const exportToExcel = async () => {
       { width: 10 },
       { width: 10 },
       { width: 20 },
+      { width: 15 },
       { width: 15 }
     ];
 
@@ -526,12 +527,20 @@ const exportToExcel = async () => {
     row.getCell(5).value = "UNIT";
     row.getCell(5).font = { bold: true, size: 10 ,name:'Arial' };
     row.getCell(5).border = sty;
-    row.getCell(6).value = "PRICE";
+    row.getCell(6).value = "USD UNIT PRC";
     row.getCell(6).border = sty;
     row.getCell(6).font = { bold: true, size: 10 ,name:'Arial' };
-    row.getCell(7).value = "SUM";
+    row.getCell(7).value = "AMOUNT";
     row.getCell(7).border = sty;
     row.getCell(7).font = { bold: true, size: 10 ,name:'Arial' };
+
+    
+    row.getCell(8).value = "LINKS";
+    row.getCell(8).border = sty;
+    row.getCell(8).font = { bold: true, size: 10 ,name:'Arial' };
+    
+    row.getCell(9).value = "F列填写含成本，运费，利润的单价";
+    row.getCell(9).font = { bold: true, size: 10 ,name:'Arial',color: { argb: 'FFFF0000' } };
     if (template.items && template.items.length > 0) {
       for (let itemIndex = 0; itemIndex < template.items.length; itemIndex++) {
         const item = template.items[itemIndex];
@@ -550,23 +559,23 @@ const exportToExcel = async () => {
 
         row.getCell(3).value = item.description || '';
         row.getCell(3).font = {
-          bold: true
+          bold: true,name:'Arial',size:14
         };
 
         row.getCell(6).numFmt = '"$"#,##0.00';
         row.getCell(6).value = (item.price || 0);
         row.getCell(6).font = {
-          bold: true
+          bold: true,name:'Arial',size:10
         };
         row.getCell(4).value = item.quantity || 0;
 
         row.getCell(4).font = {
-          bold: true
+          bold: true,name:'Arial',size:12
         };
         row.getCell(5).value = 'pcs';
 
         row.getCell(5).font = {
-          bold: true
+          bold: true,name:'Arial',size:10
         };
 
         row.getCell(7).numFmt = '"$"#,##0.00';
@@ -576,7 +585,7 @@ const exportToExcel = async () => {
         };
 
         row.getCell(7).font = {
-          bold: true
+          bold: true,name:'Arial',size:10
         };
 
         row.getCell(2).border = sty;
@@ -585,6 +594,7 @@ const exportToExcel = async () => {
         row.getCell(5).border = sty;
         row.getCell(6).border = sty;
         row.getCell(7).border = sty;
+        row.getCell(8).border = sty;
         // 设置行高以适应图片
 
         // 如果有图片，添加到图片列
@@ -638,25 +648,27 @@ const exportToExcel = async () => {
 
       // 总金额
       const row = worksheet.getRow(template.items.length + startRow);
+       row.height = 25;
       row.getCell(4).value = {
         formula: 'SUM(D2:' + 'D' + (template.items.length + 1) + ')', // 设置公式
       };
 
       row.getCell(4).font = {
         color: { argb: '00000000' },
-        bold: true,
-        size: 14
+        bold: true,name:'Arial',
+        size: 10
       };
       row.getCell(4).border = sty;
       row.getCell(6).value = 'TOTAL PRICE';
       row.getCell(6).font = {
         color: { argb: '00000000' },
-        bold: true
+        bold: true,name:'Arial',
+        size: 10
       };
       row.getCell(7).font = {
         color: { argb: 'FFFF0000' },
-        bold: true,
-        size: 14
+        bold: true,name:'Arial',
+        size: 11
       };
       row.getCell(7).border = sty;
 
@@ -667,36 +679,39 @@ const exportToExcel = async () => {
 
 
       const row3 = worksheet.getRow(template.items.length + startRow + 1);
+       row3.height = 25;
       row3.getCell(6).value = 'HANGDING CHARGE';
       //  row3.getCell(7).numFmt ='"$"#,##0.00';
       row3.getCell(7).value = '0'
 
       row3.getCell(6).font = {
         color: { argb: '00000000' },
-        bold: true
+        bold: true,name:'Arial',size:10
       };
       row3.getCell(7).font = {
         color: { argb: 'FFFF0000' },
-        bold: true
+        bold: true,name:'Arial',size:10
       };
 
 
       const row4 = worksheet.getRow(template.items.length + startRow + 2);
+       row4.height = 25;
       row4.getCell(6).value = 'COMPANY PRODUCTS';
       //  row4.getCell(7).numFmt ='"$"#,##0.00';
       row4.getCell(7).value = '0'
 
       row4.getCell(6).font = {
         color: { argb: '00000000' },
-        bold: true
+        bold: true,name:'Arial',size:10
       };
       row4.getCell(7).font = {
         color: { argb: 'FFFF0000' },
-        bold: true
+        bold: true,name:'Arial',size:10
       };
 
 
       const row5 = worksheet.getRow(template.items.length + startRow + 3);
+       row5.height = 25;
       row5.getCell(6).value = 'TOTAL CAF';
       row5.getCell(7).numFmt = '"$"#,##0.00';
       row5.getCell(7).value = {
@@ -705,12 +720,11 @@ const exportToExcel = async () => {
 
       row5.getCell(6).font = {
         color: { argb: '00000000' },
-        bold: true
+        bold: true,name:'Arial',size:10
       };
       row5.getCell(7).font = {
         color: { argb: 'FFFF0000' },
-        bold: true,
-        size: 14
+        bold: true,name:'Arial',size:10
       };
 
 
