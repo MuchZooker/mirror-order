@@ -55,7 +55,7 @@
                 <div class="form-group">
                   <label>产品图片</label>
                   <div class="image-upload">
-                    <input :ref="`itemFileInput_${itemIndex}`" type="file" accept="image/*"
+                    <input :ref="`itemFileInput_${itemIndex}`" type="file" multiple accept="image/*"
                       @change="handleItemImageUpload($event, itemIndex)" class="file-input">
                     <button type="button" class="upload-btn" @click="$refs[`itemFileInput_${itemIndex}`][0].click()">
                       <span class="btn-icon">📷</span>
@@ -335,14 +335,36 @@ const removeImage = () => {
 
 // 处理产品图片上传
 const handleItemImageUpload = (event, itemIndex) => {
-  const file = event.target.files[0];
-  if (file) {
+  const files = event.target.files;
+
+
+  for (let i = 0; i < files.length; i++) {
+
+    const file = files[i];
     const reader = new FileReader();
-    reader.onload = (e) => {
-      currentTemplate.value.items[itemIndex].image = e.target.result;
-    };
+    if (i == 0) {
+      reader.onload = (e) => {
+        currentTemplate.value.items[itemIndex].image = e.target.result;
+      };
+    } else {
+      reader.onload = (e) => {
+        addNewItem();
+        currentTemplate.value.items[currentTemplate.value.items.length-1].image = e.target.result;
+      };
+    }
+
     reader.readAsDataURL(file);
   }
+
+
+
+  // if (file) {
+  //   const reader = new FileReader();
+  //   reader.onload = (e) => {
+  //     currentTemplate.value.items[itemIndex].image = e.target.result;
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
 };
 
 // 移除产品图片
@@ -477,14 +499,13 @@ const exportToExcel = async () => {
 
             // 将图片添加到指定单元格
             worksheet.addImage(imageId, {
-              tl: { col: 1, row: itemIndex + 1 }, // 图片列（G列）
-              br: { col: 2, row: itemIndex + 2 }, // 右下角位置
+              tl: { col: 1, row: itemIndex + 1 ,offsetX: -20, offsetY: -20}, // 图片列（G列）
+              br: { col: 2, row: itemIndex + 2 ,offsetX: -20, offsetY: -20}, // 右下角位置
               editAs: 'oneCell',
               hyperlinks: {
                 tooltip: `产品${itemIndex + 1}图片`
               }
             });
-
             // 设置图片单元格的值
             // row.getCell(2).value = '图片已嵌入';
           } catch (error) {

@@ -22,6 +22,13 @@ const navis = ref([
     ],
     icon: "📋"
   },
+  
+  {
+    title: "关于",
+    id: "3-0",
+    path: "/about",
+    icon: "🏠"
+  },
   // {
   //   title: "库存",
   //   id: "3-0",

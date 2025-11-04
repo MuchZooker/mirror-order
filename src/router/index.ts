@@ -27,6 +27,12 @@ const router = createRouter({
       ]
     },
     {
+      path: '/about',
+      name: 'about',
+      // component: DashBoard,
+      component: () => import('../views/AboutView.vue'),
+    },
+    {
       path: '/order-template/:id',
       name: 'OrderTemplateDetails',
       component: () => import('../views/OrderTemplatesDetailView.vue'),
